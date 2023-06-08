@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -34,7 +39,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
+                    Calculator()
                 }
             }
         }
@@ -46,9 +51,10 @@ fun CustomKey(
     modifier: Modifier = Modifier,
     keyValue: String,
     textAlignment: Alignment = Alignment.Center,
-    textModifier: Modifier = Modifier
+    textModifier: Modifier = Modifier,
+    onClick: (String)-> Unit = {}
 ) {
-    Card(shape = RoundedCornerShape(10.dp), modifier = modifier.padding(1.dp)) {
+    Card(shape = RoundedCornerShape(10.dp), modifier = modifier.padding(1.dp).clickable { onClick(keyValue) }) {
         Box(
             modifier = modifier.fillMaxWidth()
                 .background(color = MaterialTheme.colorScheme.onSecondaryContainer),
@@ -65,52 +71,106 @@ fun CustomKey(
     }
 }
 
+@Composable
+fun Calculator(){
+    var principalNumber by remember{
+        mutableStateOf("")
+    }
+    var total by remember{
+        mutableStateOf(0.0)
+    }
+
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.weight(2.0f)) {
+                CustomKey(
+                    keyValue = ".",
+                    modifier = Modifier
+                        .fillMaxWidth().weight(1.0f),
+                    textAlignment = Alignment.CenterEnd,
+                    textModifier = Modifier.padding(6.dp)
+                )
+                CustomKey(
+                    keyValue = principalNumber.ifEmpty { "0.0" },
+                    modifier = Modifier.fillMaxWidth().weight(2.0f),
+                    textAlignment = Alignment.CenterEnd,
+                    textModifier = Modifier.padding(6.dp)
+                )
+            }
+            Row(modifier = Modifier.weight(1.0f)) {
+                CustomKey(keyValue = "7", modifier = Modifier.weight(1.0f)){
+                    principalNumber += it 
+
+                }
+                CustomKey(keyValue = "8", modifier = Modifier.weight(1.0f)){
+                    principalNumber += it 
+
+                }
+                CustomKey(keyValue = "9", modifier = Modifier.weight(1.0f)){
+                    principalNumber += it 
+
+                }
+                CustomKey(keyValue = "*", modifier = Modifier.weight(1.0f)){
+                    if (!principalNumber.contains(it)) principalNumber += it
+                }
+            }
+            Row(modifier = Modifier.weight(1.0f)) {
+                CustomKey(keyValue = "4", modifier = Modifier.weight(1.0f)){
+                    principalNumber += it 
+
+                }
+                CustomKey(keyValue = "5", modifier = Modifier.weight(1.0f)){
+                    principalNumber += it 
+
+                }
+                CustomKey(keyValue = "6", modifier = Modifier.weight(1.0f)){
+                    principalNumber += it 
+
+                }
+                CustomKey(keyValue = "/", modifier = Modifier.weight(1.0f)){
+                    if (!principalNumber.contains(it)) principalNumber += it
+                }
+            }
+            Row(modifier = Modifier.weight(1.0f)) {
+                CustomKey(keyValue = "1", modifier = Modifier.weight(1.0f)){
+                    principalNumber += it 
+
+                }
+                CustomKey(keyValue = "2", modifier = Modifier.weight(1.0f)){
+                    principalNumber += it 
+
+                }
+                CustomKey(keyValue = "3", modifier = Modifier.weight(1.0f)){
+                    principalNumber += it 
+
+                }
+                CustomKey(keyValue = "-", modifier = Modifier.weight(1.0f)){
+                    if (!principalNumber.contains(it)) principalNumber += it
+                }
+            }
+            Row(modifier = Modifier.weight(1.0f)) {
+                CustomKey(keyValue = "0", modifier = Modifier.weight(1.0f)){
+                    principalNumber += it
+                }
+                CustomKey(keyValue = ".", modifier = Modifier.weight(1.0f)){
+                    if (!principalNumber.contains(it)) principalNumber += it
+                }
+                CustomKey(keyValue = "=", modifier = Modifier.weight(1.0f)){
+                    var operation = principalNumber.split("/", "+", "*", "-")
+
+                }
+                CustomKey(keyValue = "+", modifier = Modifier.weight(1.0f)){
+                    if (!principalNumber.contains(it)) principalNumber += it
+                }
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     CalculatorSpeedrunTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Column(modifier = Modifier.weight(2.0f)) {
-                    CustomKey(
-                        keyValue = ".",
-                        modifier = Modifier
-                            .fillMaxWidth().weight(1.0f),
-                        textAlignment = Alignment.CenterEnd,
-                        textModifier = Modifier.padding(6.dp)
-                    )
-                    CustomKey(
-                        keyValue = "0.0",
-                        modifier = Modifier.fillMaxWidth().weight(2.0f),
-                        textAlignment = Alignment.CenterEnd,
-                        textModifier = Modifier.padding(6.dp)
-                    )
-                }
-                Row(modifier = Modifier.weight(1.0f)) {
-                    CustomKey(keyValue = "7", modifier = Modifier.weight(1.0f))
-                    CustomKey(keyValue = "8", modifier = Modifier.weight(1.0f))
-                    CustomKey(keyValue = "9", modifier = Modifier.weight(1.0f))
-                    CustomKey(keyValue = "*", modifier = Modifier.weight(1.0f))
-                }
-                Row(modifier = Modifier.weight(1.0f)) {
-                    CustomKey(keyValue = "4", modifier = Modifier.weight(1.0f))
-                    CustomKey(keyValue = "5", modifier = Modifier.weight(1.0f))
-                    CustomKey(keyValue = "6", modifier = Modifier.weight(1.0f))
-                    CustomKey(keyValue = "/", modifier = Modifier.weight(1.0f))
-                }
-                Row(modifier = Modifier.weight(1.0f)) {
-                    CustomKey(keyValue = "1", modifier = Modifier.weight(1.0f))
-                    CustomKey(keyValue = "2", modifier = Modifier.weight(1.0f))
-                    CustomKey(keyValue = "3", modifier = Modifier.weight(1.0f))
-                    CustomKey(keyValue = "-", modifier = Modifier.weight(1.0f))
-                }
-                Row(modifier = Modifier.weight(1.0f)) {
-                    CustomKey(keyValue = "0", modifier = Modifier.weight(1.0f))
-                    CustomKey(keyValue = ".", modifier = Modifier.weight(1.0f))
-                    CustomKey(keyValue = "=", modifier = Modifier.weight(1.0f))
-                    CustomKey(keyValue = "+", modifier = Modifier.weight(1.0f))
-                }
-            }
-        }
+        Calculator()
     }
 }
